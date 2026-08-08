@@ -1,0 +1,1337 @@
+{
+  "datasets": [
+    {
+      "name": "72579f0b",
+      "displayName": "veiw_driver_standing",
+      "config": {
+        "version": "1.1",
+        "source": "formual1.gold.veiw_driver_standing",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "d768f84b",
+      "displayName": "veiw_constructor_standing",
+      "config": {
+        "version": "1.1",
+        "source": "formual1.gold.veiw_constructor_standing",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "9c84b91b",
+      "displayName": "dominant drivers dashboard",
+      "queryLines": [
+        "WITH driver_metrics AS\r\n",
+        "(\r\n",
+        "SELECT driver_name,\r\n",
+        "SUM(race_starts) AS races_starts,\r\n",
+        "SUM(number_of_wins) AS total_wins,\r\n",
+        "SUM(number_of_podiums) AS total_podiums,\r\n",
+        "SUM(CASE WHEN standing == 1 THEN 1 ELSE 0 END) AS total_championships\r\n",
+        "FROM formual1.gold.veiw_driver_standing\r\n",
+        "GROUP BY driver_name\r\n",
+        "HAVING total_championships >= 1)\r\n",
+        "SELECT driver_name,\r\n",
+        "races_starts,\r\n",
+        "total_wins,\r\n",
+        "total_podiums,\r\n",
+        "total_championships,\r\n",
+        "(total_championships * 100) + (total_wins * 10) + (total_podiums * 3) AS greatness_score\r\n",
+        "FROM driver_metrics\r\n",
+        "ORDER BY greatness_score DESC;"
+      ]
+    },
+    {
+      "name": "62017a29",
+      "displayName": "Untitled dataset",
+      "queryLines": [
+        ""
+      ]
+    },
+    {
+      "name": "40e67062",
+      "displayName": "dominant constructor dashboard",
+      "queryLines": [
+        "WITH constructor_metrics AS (\r\n",
+        "  SELECT\r\n",
+        "    constructor_name,\r\n",
+        "    SUM(race_starts) AS races_starts,\r\n",
+        "    SUM(number_of_wins) AS total_wins,\r\n",
+        "    SUM(number_of_podiums) AS total_podiums,\r\n",
+        "    SUM(CASE WHEN standing = 1 THEN 1 ELSE 0 END) AS total_championships\r\n",
+        "  FROM formual1.gold.veiw_constructor_standing\r\n",
+        "  GROUP BY constructor_name\r\n",
+        "  HAVING total_championships >=1 \r\n",
+        ")\r\n",
+        "SELECT\r\n",
+        "  constructor_name,\r\n",
+        "  races_starts,\r\n",
+        "  total_wins,\r\n",
+        "  total_podiums,\r\n",
+        "  total_championships,\r\n",
+        "  (total_championships * 100) + (total_wins * 10) + (total_podiums * 3) AS greatness_score\r\n",
+        "FROM constructor_metrics\r\n",
+        "ORDER BY greatness_score DESC\r\n",
+        "LIMIT 10;"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "668ebc61",
+      "displayName": "driver_championshi_standing",
+      "layout": [
+        {
+          "widget": {
+            "name": "6f88fc9a",
+            "multilineTextboxSpec": {
+              "lines": [
+                "# Driver Championship Standings"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "formula1-analytic-dashboard-driver-championship-standings",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "72579f0b",
+                  "fields": [
+                    {
+                      "name": "standing",
+                      "expression": "`standing`"
+                    },
+                    {
+                      "name": "driver_name",
+                      "expression": "`driver_name`"
+                    },
+                    {
+                      "name": "nationality",
+                      "expression": "`nationality`"
+                    },
+                    {
+                      "name": "total_points",
+                      "expression": "`total_points`"
+                    },
+                    {
+                      "name": "number_of_wins",
+                      "expression": "`number_of_wins`"
+                    },
+                    {
+                      "name": "season",
+                      "expression": "`season`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Driver Championship standings\n"
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "standing",
+                    "displayName": "Position"
+                  },
+                  {
+                    "fieldName": "driver_name",
+                    "displayName": "Driver"
+                  },
+                  {
+                    "fieldName": "nationality",
+                    "displayName": "Nationality"
+                  },
+                  {
+                    "fieldName": "total_points",
+                    "contentAlignment": "left",
+                    "format": {
+                      "type": "number-plain",
+                      "abbreviation": "none",
+                      "decimalPlaces": {
+                        "type": "all"
+                      },
+                      "hideGroupSeparator": true
+                    },
+                    "displayName": "Points"
+                  },
+                  {
+                    "fieldName": "number_of_wins",
+                    "contentAlignment": "left",
+                    "displayName": "Wins"
+                  },
+                  {
+                    "fieldName": "season",
+                    "contentAlignment": "left",
+                    "displayName": "Season"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 7,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "season",
+            "queries": [
+              {
+                "name": "dashboards/01f18f219d07140183328a58b142b0c2/datasets/01f18f22530410978ec56e6b8881cb87_season",
+                "query": {
+                  "datasetName": "72579f0b",
+                  "fields": [
+                    {
+                      "name": "season",
+                      "expression": "`season`"
+                    },
+                    {
+                      "name": "season_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Season"
+              },
+              "selection": {
+                "defaultSelection": {
+                  "values": {
+                    "dataType": "INTEGER",
+                    "values": [
+                      {
+                        "value": "2025"
+                      }
+                    ]
+                  }
+                }
+              },
+              "scale": {
+                "type": "categorical",
+                "sort": {
+                  "by": "natural-order-reversed"
+                }
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "season",
+                    "queryName": "dashboards/01f18f219d07140183328a58b142b0c2/datasets/01f18f22530410978ec56e6b8881cb87_season"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 1,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "avg-customers-per-month",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "72579f0b",
+                  "fields": [
+                    {
+                      "name": "total_points",
+                      "expression": "`total_points`"
+                    },
+                    {
+                      "name": "driver_name",
+                      "expression": "`driver_name`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Total Points Scored by Driver"
+              },
+              "mark": {
+                "colors": [
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 1
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 2
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 3
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 4
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 5
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 6
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 7
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 8
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 9
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 10
+                  }
+                ]
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "total_points",
+                  "displayName": "Points",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "driver_name",
+                  "displayName": "Driver",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x-reversed"
+                    }
+                  }
+                },
+                "color": {
+                  "fieldName": "total_points",
+                  "scale": {
+                    "type": "quantitative",
+                    "colorRamp": {
+                      "mode": "scheme",
+                      "scheme": "plasma"
+                    }
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 8,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "w",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "72579f0b",
+                  "fields": [
+                    {
+                      "name": "sum(number_of_wins)",
+                      "expression": "SUM(`number_of_wins`)"
+                    },
+                    {
+                      "name": "driver_name",
+                      "expression": "`driver_name`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Wins by Driver"
+              },
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "sum(number_of_wins)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Wins by Driver"
+                },
+                "color": {
+                  "fieldName": "driver_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 7,
+            "y": 2,
+            "width": 5,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "cee07f1c",
+      "displayName": "Constructor_championshi_standing",
+      "layout": [
+        {
+          "widget": {
+            "name": "531348b0",
+            "multilineTextboxSpec": {
+              "lines": [
+                "# Constructor Championship Standings"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "16be9169",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "d768f84b",
+                  "fields": [
+                    {
+                      "name": "standing",
+                      "expression": "`standing`"
+                    },
+                    {
+                      "name": "constructor_name",
+                      "expression": "`constructor_name`"
+                    },
+                    {
+                      "name": "nationality",
+                      "expression": "`nationality`"
+                    },
+                    {
+                      "name": "total_points",
+                      "expression": "`total_points`"
+                    },
+                    {
+                      "name": "number_of_wins",
+                      "expression": "`number_of_wins`"
+                    },
+                    {
+                      "name": "season",
+                      "expression": "`season`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Constructor Championship standings\n"
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "standing",
+                    "displayName": "Position"
+                  },
+                  {
+                    "fieldName": "constructor_name",
+                    "displayName": "Team"
+                  },
+                  {
+                    "fieldName": "nationality",
+                    "displayName": "Nationality"
+                  },
+                  {
+                    "fieldName": "total_points",
+                    "contentAlignment": "left",
+                    "format": {
+                      "type": "number-plain",
+                      "abbreviation": "none",
+                      "decimalPlaces": {
+                        "type": "all"
+                      },
+                      "hideGroupSeparator": true
+                    },
+                    "displayName": "Points"
+                  },
+                  {
+                    "fieldName": "number_of_wins",
+                    "contentAlignment": "left",
+                    "displayName": "Wins"
+                  },
+                  {
+                    "fieldName": "season",
+                    "contentAlignment": "left",
+                    "displayName": "Season"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 7,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "c71bc2c0",
+            "queries": [
+              {
+                "name": "dashboards/01f18f219d07140183328a58b142b0c2/datasets/01f18f263e5b1b518a6f305ee08e4b91_season",
+                "query": {
+                  "datasetName": "d768f84b",
+                  "fields": [
+                    {
+                      "name": "season",
+                      "expression": "`season`"
+                    },
+                    {
+                      "name": "season_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Season"
+              },
+              "scale": {
+                "type": "categorical",
+                "sort": {
+                  "by": "natural-order-reversed"
+                }
+              },
+              "selection": {
+                "defaultSelection": {
+                  "values": {
+                    "dataType": "INTEGER",
+                    "values": [
+                      {
+                        "value": "2025"
+                      }
+                    ]
+                  }
+                }
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "season",
+                    "queryName": "dashboards/01f18f219d07140183328a58b142b0c2/datasets/01f18f263e5b1b518a6f305ee08e4b91_season"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 1,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "d034e26e",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "d768f84b",
+                  "fields": [
+                    {
+                      "name": "total_points",
+                      "expression": "`total_points`"
+                    },
+                    {
+                      "name": "constructor_name",
+                      "expression": "`constructor_name`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Total Points Scored by Constructor"
+              },
+              "mark": {
+                "colors": [
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 1
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 2
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 3
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 4
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 5
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 6
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 7
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 8
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 9
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 10
+                  }
+                ]
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "total_points",
+                  "displayName": "Points",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "constructor_name",
+                  "displayName": "Team",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x-reversed"
+                    }
+                  }
+                },
+                "color": {
+                  "fieldName": "total_points",
+                  "scale": {
+                    "type": "quantitative",
+                    "colorRamp": {
+                      "mode": "scheme",
+                      "scheme": "plasma"
+                    }
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 8,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "7f3a9b1f",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "d768f84b",
+                  "fields": [
+                    {
+                      "name": "sum(number_of_wins)",
+                      "expression": "SUM(`number_of_wins`)"
+                    },
+                    {
+                      "name": "constructor_name",
+                      "expression": "`constructor_name`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Wins by Constructor"
+              },
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "sum(number_of_wins)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Wins by Team"
+                },
+                "color": {
+                  "fieldName": "constructor_name",
+                  "displayName": "Team",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 7,
+            "y": 2,
+            "width": 5,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "a58313e3",
+      "displayName": "Dominat drivers of all time",
+      "layout": [
+        {
+          "widget": {
+            "name": "domiant-dri",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "9c84b91b",
+                  "fields": [
+                    {
+                      "name": "driver_name",
+                      "expression": "`driver_name`"
+                    },
+                    {
+                      "name": "total_wins",
+                      "expression": "`total_wins`"
+                    },
+                    {
+                      "name": "total_podiums",
+                      "expression": "`total_podiums`"
+                    },
+                    {
+                      "name": "total_championships",
+                      "expression": "`total_championships`"
+                    },
+                    {
+                      "name": "races_starts",
+                      "expression": "`races_starts`"
+                    },
+                    {
+                      "name": "greatness_score",
+                      "expression": "`greatness_score`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Dominant drivers"
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "driver_name",
+                    "displayName": "Driver"
+                  },
+                  {
+                    "fieldName": "total_wins",
+                    "contentAlignment": "left",
+                    "displayName": "Wins"
+                  },
+                  {
+                    "fieldName": "total_podiums",
+                    "contentAlignment": "left",
+                    "displayName": "Podium"
+                  },
+                  {
+                    "fieldName": "total_championships",
+                    "contentAlignment": "left",
+                    "displayName": "Championship"
+                  },
+                  {
+                    "fieldName": "races_starts",
+                    "contentAlignment": "left",
+                    "displayName": "races"
+                  },
+                  {
+                    "fieldName": "greatness_score",
+                    "contentAlignment": "left",
+                    "displayName": "Greatness_score"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 1,
+            "width": 7,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "3f50ca05",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "9c84b91b",
+                  "fields": [
+                    {
+                      "name": "sum(total_championships)",
+                      "expression": "SUM(`total_championships`)"
+                    },
+                    {
+                      "name": "driver_name",
+                      "expression": "`driver_name`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "sum(total_championships)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Championship By Driver"
+                },
+                "color": {
+                  "fieldName": "driver_name",
+                  "displayName": "Driver",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 7,
+            "y": 1,
+            "width": 5,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "a08c76cc",
+            "multilineTextboxSpec": {
+              "lines": [
+                "# Dominant Drivers of All Time\n",
+                "<p>&nbsp;</p>\n"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "greatness",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "9c84b91b",
+                  "fields": [
+                    {
+                      "name": "sum(greatness_score)",
+                      "expression": "SUM(`greatness_score`)"
+                    },
+                    {
+                      "name": "driver_name",
+                      "expression": "`driver_name`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Greatness Score by Driver"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "sum(greatness_score)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 2
+                    }
+                  },
+                  "scale": {
+                    "type": "quantitative",
+                    "reverse": false
+                  }
+                },
+                "y": {
+                  "fieldName": "driver_name",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x-reversed"
+                    }
+                  }
+                },
+                "color": {
+                  "fieldName": "sum(greatness_score)",
+                  "scale": {
+                    "type": "quantitative",
+                    "colorRamp": {
+                      "mode": "scheme",
+                      "scheme": "plasma"
+                    }
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 7,
+            "width": 11,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "ddd20684",
+      "displayName": "Dominant Teams of all time 1",
+      "layout": [
+        {
+          "widget": {
+            "name": "5d8dd211",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "40e67062",
+                  "fields": [
+                    {
+                      "name": "constructor_name",
+                      "expression": "`constructor_name`"
+                    },
+                    {
+                      "name": "total_wins",
+                      "expression": "`total_wins`"
+                    },
+                    {
+                      "name": "total_podiums",
+                      "expression": "`total_podiums`"
+                    },
+                    {
+                      "name": "total_championships",
+                      "expression": "`total_championships`"
+                    },
+                    {
+                      "name": "races_starts",
+                      "expression": "`races_starts`"
+                    },
+                    {
+                      "name": "greatness_score",
+                      "expression": "`greatness_score`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Dominant constructor"
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "constructor_name",
+                    "displayName": "Team"
+                  },
+                  {
+                    "fieldName": "total_wins",
+                    "contentAlignment": "left",
+                    "displayName": "Wins"
+                  },
+                  {
+                    "fieldName": "total_podiums",
+                    "contentAlignment": "left",
+                    "displayName": "Podium"
+                  },
+                  {
+                    "fieldName": "total_championships",
+                    "contentAlignment": "left",
+                    "displayName": "Championship"
+                  },
+                  {
+                    "fieldName": "races_starts",
+                    "contentAlignment": "left",
+                    "displayName": "races"
+                  },
+                  {
+                    "fieldName": "greatness_score",
+                    "contentAlignment": "left",
+                    "displayName": "Greatness_score"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 1,
+            "width": 7,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "ba95d3e4",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "40e67062",
+                  "fields": [
+                    {
+                      "name": "sum(total_championships)",
+                      "expression": "SUM(`total_championships`)"
+                    },
+                    {
+                      "name": "constructor_name",
+                      "expression": "`constructor_name`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "sum(total_championships)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Championship By Team"
+                },
+                "color": {
+                  "fieldName": "constructor_name",
+                  "displayName": "Driver",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 7,
+            "y": 1,
+            "width": 5,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "d025b6d7",
+            "multilineTextboxSpec": {
+              "lines": [
+                "# Dominant Constructors of All Time\n",
+                "<p>&nbsp;</p>\n"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "77639053",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "40e67062",
+                  "fields": [
+                    {
+                      "name": "sum(greatness_score)",
+                      "expression": "SUM(`greatness_score`)"
+                    },
+                    {
+                      "name": "constructor_name",
+                      "expression": "`constructor_name`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Greatness Score by Team"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "sum(greatness_score)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 2
+                    }
+                  },
+                  "displayName": "Greatness score",
+                  "scale": {
+                    "type": "quantitative",
+                    "reverse": false
+                  }
+                },
+                "y": {
+                  "fieldName": "constructor_name",
+                  "displayName": "Team",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x-reversed"
+                    }
+                  }
+                },
+                "color": {
+                  "fieldName": "sum(greatness_score)",
+                  "scale": {
+                    "type": "quantitative",
+                    "colorRamp": {
+                      "mode": "scheme",
+                      "scheme": "plasma"
+                    }
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 7,
+            "width": 11,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}
